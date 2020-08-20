@@ -23,7 +23,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         "xcode",
         "Swift",
     ]
-    var vc : ProgramaticViewController?
+    
+    var vc : ViewController?
     
     var window: NSWindow!
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -44,7 +45,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         statusItem.button?.title = "𝒞"
         statusItem.button?.target = self
-        statusItem.button?.action = #selector(showSettings2)
+        statusItem.button?.action = #selector(showPopover)
                 
         WatchPasteboard { copied in
             print("copy detected : \(copied)")
@@ -56,15 +57,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             
         hotKey.keyDownHandler = {
             print("hotkey pressed")
-            self.showSettings2()
+            self.showPopover()
         }
     }
-
-    func applicationWillTerminate(_ aNotification: Notification) {
-        // Insert code here to tear down your application
+    
+    func saveToDisk() {
+        let documentsUrl = FileManager.default.urls(for: .userDirectory, in: .userDomainMask)[0] as NSURL
+        // add a filename
+        let fileUrl = documentsUrl.appendingPathComponent(".foo.txt")
+        //
+        try! history
+                .joined(separator: "\n")
+                .write(to: fileUrl!, atomically: true, encoding: String.Encoding.utf8)
     }
     
-    @objc func showSettings2() {
+    @objc func showPopover() {
         
         guard let button = statusItem.button else {
             fatalError("could not find the button in the status bar")
@@ -73,7 +80,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let frame = CGRect(origin: .zero, size: CGSize(width: 400, height: 300))
         let popover = NSPopover()
 
-        vc = ProgramaticViewController()
+        vc = ViewController()
         vc?.history = history
         vc?.removeItem = { (str: String) in
             print("removing from closure")
@@ -88,26 +95,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         popover.contentViewController = vc
         popover.behavior = .transient
         popover.show(relativeTo: button.bounds, of: button, preferredEdge: .maxY)
-    }
     
-    @objc func showSettings() {
-        let storyboard = NSStoryboard(name: "Main", bundle: nil)
-        guard let vc = storyboard.instantiateController(withIdentifier: "ViewController") as? ViewController else {
-            fatalError("could not find the viewcontroller")
-        }
-        
-        //self.vc = vc
-        
-        guard let button = statusItem.button else {
-            fatalError("could not find the button in the status bar")
-        }
-        
-        vc.addHistory(history: history)
-        
-        let popover = NSPopover()
-        popover.contentViewController = vc
-        popover.behavior = .transient
-        popover.show(relativeTo: button.bounds, of: button, preferredEdge: .maxY)
     }
+
 }
 

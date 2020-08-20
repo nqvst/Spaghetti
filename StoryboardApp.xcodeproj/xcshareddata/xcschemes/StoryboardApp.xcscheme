@@ -17,7 +17,7 @@
                BlueprintIdentifier = "0418B69424A405EA00119A11"
                BuildableName = "StoryboardApp.app"
                BlueprintName = "StoryboardApp"
-               ReferencedContainer = "container:CopyPasta.xcodeproj">
+               ReferencedContainer = "container:StoryboardApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,7 +47,7 @@
             BlueprintIdentifier = "0418B69424A405EA00119A11"
             BuildableName = "StoryboardApp.app"
             BlueprintName = "StoryboardApp"
-            ReferencedContainer = "container:CopyPasta.xcodeproj">
+            ReferencedContainer = "container:StoryboardApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -64,7 +64,7 @@
             BlueprintIdentifier = "0418B69424A405EA00119A11"
             BuildableName = "StoryboardApp.app"
             BlueprintName = "StoryboardApp"
-            ReferencedContainer = "container:CopyPasta.xcodeproj">
+            ReferencedContainer = "container:StoryboardApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
