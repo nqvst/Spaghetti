@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import SnapKit
 
 class ViewController: NSViewController {
     
@@ -21,6 +22,7 @@ class ViewController: NSViewController {
     var reversedHistory: [String] {
         history.reversed()
     }
+    
     var filteredHistory: [String] {
         history.filter { $0.lowercased().contains(inputTextField.stringValue.lowercased()) || inputTextField.stringValue == "" }
     }
@@ -103,8 +105,8 @@ extension ViewController: NSTableViewDelegate {
             guard let cellView = tableView.makeView(withIdentifier: cellIdentifier, owner: self) as? NSTableCellView else {
                 return nil }
             let button = NSButton(title: "X", target: self, action: #selector(delete))
+           
             button.tag = row
-            button.sizeToFit()
             cellView.addSubview(button)
 
             print(" here -> \(NSBackspaceCharacter) <-")
@@ -116,7 +118,7 @@ extension ViewController: NSTableViewDelegate {
             let cellIdentifier = NSUserInterfaceItemIdentifier(rawValue: "ButtonCell")
             guard let cellView = tableView.makeView(withIdentifier: cellIdentifier, owner: self) as? NSTableCellView else { return nil }
             let button = NSButton(title: "copy", target: self, action: #selector(actuallyPaste))
-            button.sizeToFit()
+            
             cellView.addSubview(button)
             
             button.keyEquivalent = "\r"

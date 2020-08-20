@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0417B0ED24DBFC7900C4420F /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0417B0EC24DBFC7900C4420F /* SnapKit */; };
+		0417B0F924DC220200C4420F /* ProgramaticViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0417B0F824DC220200C4420F /* ProgramaticViewController.swift */; };
 		0418B69924A405EA00119A11 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0418B69824A405EA00119A11 /* AppDelegate.swift */; };
 		0418B69B24A405EA00119A11 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0418B69A24A405EA00119A11 /* ViewController.swift */; };
 		0418B69D24A405EC00119A11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0418B69C24A405EC00119A11 /* Assets.xcassets */; };
@@ -17,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0417B0F824DC220200C4420F /* ProgramaticViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgramaticViewController.swift; sourceTree = "<group>"; };
 		0418B69524A405EA00119A11 /* StoryboardApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StoryboardApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0418B69824A405EA00119A11 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0418B69A24A405EA00119A11 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -66,6 +68,7 @@
 				0418B6A124A405EC00119A11 /* Info.plist */,
 				0418B6A224A405EC00119A11 /* StoryboardApp.entitlements */,
 				0418B6AB24A498B500119A11 /* StringSubscript.swift */,
+				0417B0F824DC220200C4420F /* ProgramaticViewController.swift */,
 			);
 			path = StoryboardApp;
 			sourceTree = "<group>";
@@ -109,7 +112,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 0418B69024A405EA00119A11 /* Build configuration list for PBXProject "StoryboardApp" */;
+			buildConfigurationList = 0418B69024A405EA00119A11 /* Build configuration list for PBXProject "CopyPasta" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -150,6 +153,7 @@
 			files = (
 				0418B69B24A405EA00119A11 /* ViewController.swift in Sources */,
 				0418B6AC24A498B500119A11 /* StringSubscript.swift in Sources */,
+				0417B0F924DC220200C4420F /* ProgramaticViewController.swift in Sources */,
 				0418B69924A405EA00119A11 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -324,7 +328,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0418B69024A405EA00119A11 /* Build configuration list for PBXProject "StoryboardApp" */ = {
+		0418B69024A405EA00119A11 /* Build configuration list for PBXProject "CopyPasta" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0418B6A324A405EC00119A11 /* Debug */,
