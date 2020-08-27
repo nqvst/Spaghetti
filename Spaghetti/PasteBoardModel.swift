@@ -11,49 +11,53 @@ import Cocoa
 
 class PasteBoardModel {
     var pasteItems: [PasteItem]!
-    var pinnedItems: [PasteItem]!
+    var pinnedItems: [PasteItem] {
+        pasteItems.filter { $0.isPinned }
+    }
+    var onlyHistorItems: [PasteItem] {
+        pasteItems.filter { !$0.isPinned }
+    }
     
     var maxNumerOfItems: Int = 100
     
-    init(_ pasteItems: [PasteItem], _ pinnedItems: [PasteItem] ) {
+    init(_ pasteItems: [PasteItem]) {
         self.pasteItems = pasteItems
-        self.pinnedItems = pinnedItems
     }
     
-    func addToPastboard(_ item: PasteItem) {
-        removeFromHistory(item)
+    func add(_ item: PasteItem) {
+        remove(item)
         pasteItems.append(item)
         
-        if self.pasteItems.count > self.maxNumerOfItems {
-            self.pasteItems.remove(at: 0)
+        if self.onlyHistorItems.count > self.maxNumerOfItems {
+            if let index = pasteItems.firstIndex(where: { !$0.isPinned }) {
+                pasteItems.remove(at: index)
+            }
         }
     }
     
-    func removeFromHistory(_ itemToRemove: PasteItem) {
+    func remove(_ itemToRemove: PasteItem) {
         self.pasteItems.removeAll { item in
             itemToRemove.value == item.value
         }
     }
     
     func addToPinned(_ item: PasteItem) {
-        removePinned(item)
-        
-        let newItem = PasteItem(item.value, pinned: true)
-        pinnedItems.append(newItem)
-        
-        if let index = pasteItems.firstIndex(where:{ $0.value == item.value }) {
-            pasteItems[index] = newItem
+        if let index = pasteItems.firstIndex(where: { $0.value == item.value }) {
+            pasteItems[index].toggle()
         }
         
         if self.pinnedItems.count > self.maxNumerOfItems {
-            self.pinnedItems.remove(at: 0)
+            if let index = pasteItems.firstIndex(where:{ $0.isPinned }) {
+                pasteItems.remove(at: index)
+            }
         }
     }
     
+    
     func removePinned(_ itemToRemove: PasteItem) {
-        self.pinnedItems.removeAll { item in
-            itemToRemove.value == item.value
-        }
+        if let index = pasteItems.firstIndex(where:{ $0.value == itemToRemove.value }) {
+           pasteItems[index].toggle()
+       }
     }
     
     func clear() {

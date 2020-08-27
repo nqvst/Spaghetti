@@ -22,14 +22,13 @@ class ViewController: NSViewController {
         }
     }
     var dismissCallback: (() -> Void)?
-    
-    private var showPinnedItems = false
+    var showPinnedItems = false
     
     var reversedHistory: [PasteItem] {
         if showPinnedItems {
-            return dataModel.pinnedItems.reversed()
+            return dataModel.pasteItems.filter { $0.isPinned }.reversed()
         } else {
-            return dataModel.pasteItems.reversed()
+            return dataModel.pasteItems.filter { !$0.isPinned }.reversed()
         }
     }
     
@@ -49,7 +48,7 @@ class ViewController: NSViewController {
         setupTableView()
         setupMenu()
         setupLabel()
-
+        
         calculateConstraints()
         // dont highlight the settings button
         settingsBuitton.refusesFirstResponder = true
@@ -67,7 +66,7 @@ class ViewController: NSViewController {
         tableView.snp.makeConstraints { make -> Void in
             make.trailing.leading.top.equalTo(scrollView).inset(NSEdgeInsetsMake(5, 5, 5, 5))
         }
-
+        
         scrollView.snp.makeConstraints { make -> Void in
             make.top.equalTo(settingsBuitton.snp.bottom).offset(10)
             make.bottom.leading.trailing.equalTo(view)
@@ -92,13 +91,13 @@ class ViewController: NSViewController {
     func setupTableView() {
         
         scrollView.documentView = tableView
-
+        
         scrollView.drawsBackground = false
         view.addSubview(scrollView)
         
         tableView.delegate = self
         tableView.dataSource = self
-
+        
         let dataCol = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "DataColumn"))
         tableView.addTableColumn(dataCol)
         
@@ -106,11 +105,11 @@ class ViewController: NSViewController {
         
         scrollView.hasHorizontalScroller = false
         scrollView.hasVerticalScroller = false
-
+        
         tableView.headerView = nil
         scrollView.documentView = tableView
         
-//        view.addSubview(tableView)
+        //        view.addSubview(tableView)
     }
     
     func setupMenu() {
@@ -194,6 +193,7 @@ class ViewController: NSViewController {
             case MenuChoices.CLEAR.rawValue:
                 print("Clear")
                 dataModel.clear()
+                tableView.reloadData()
             case MenuChoices.HELP.rawValue:
                 print("help")
             default:
@@ -248,45 +248,41 @@ extension ViewController: NSTableViewDataSource, NSTableViewDelegate {
     
     // MARK: NSTableViewDelegate - view
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        let currentHistoryItem : PasteItem = reversedHistory[row]
-        print("reloading [tableView]!!!", currentHistoryItem)
-        print("in reloading table view: ",tableView.numberOfRows)
+        let item = reversedHistory[row]
         let height: CGFloat = 35.0
         tableView.rowHeight = height
         
         let frameRect = NSRect(x: 0, y: 0, width: tableColumn!.width, height: height)
-        let tableCellView = ClipDataCell(frame: frameRect, text:  currentHistoryItem.value, pinned: currentHistoryItem.isPinned )
+        let tableCellView = ClipDataCell(frame: frameRect, text:  item.value, pinned: item.isPinned )
         
         return tableCellView
     }
     
     // MARK: NSTableViewDelegate - swipe actions
     func tableView(_ tableView: NSTableView, rowActionsForRow row: Int, edge: NSTableView.RowActionEdge) -> [NSTableViewRowAction] {
-        let currentHistoryItem : PasteItem = reversedHistory[row]
-        let removeAction = NSTableViewRowAction(style: .destructive, title: "Remove") { (action, row2) in
-            if self.showPinnedItems {
-                self.dataModel.removePinned(currentHistoryItem)
-            } else {
-                self.dataModel.removeFromHistory(currentHistoryItem)
-            }
-
-            tableView.removeRows(at: IndexSet(integer: row2), withAnimation: .slideLeft)
+        let item : PasteItem = reversedHistory[row]
+        
+        let removeAction = NSTableViewRowAction(style: .destructive, title: "Remove") { (action, row) in
+            self.dataModel.remove(item)
+            tableView.removeRows(at: IndexSet(integer: row), withAnimation: .slideLeft)
         }
-
+        
         let pinAction = NSTableViewRowAction(style: .regular, title: "Save") { (action, row) in
-            if self.showPinnedItems {
-                self.dataModel.removePinned(currentHistoryItem)
-            } else {
-                self.dataModel.addToPinned(currentHistoryItem)
-            }
-
-            tableView.reloadData()
+            self.dataModel.addToPinned(item)
+            tableView.removeRows(at: IndexSet(integer: row), withAnimation: .slideRight)
+            
         }
-
+        
+        let removePinAction = NSTableViewRowAction(style: .destructive, title: "Remove") { (action, row) in
+            self.dataModel.removePinned(item)
+            tableView.removeRows(at: IndexSet(integer: row), withAnimation: .slideRight)
+            
+        }
+        
         switch edge {
         case .leading:
             if self.showPinnedItems {
-                return [removeAction]
+                return [removePinAction]
             } else {
                 return [pinAction]
             }

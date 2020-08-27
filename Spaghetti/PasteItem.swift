@@ -10,22 +10,18 @@ import Foundation
 
 struct PasteItem {
     var value: String
-    var isPinned: Bool = false {
-        didSet {
-            print("PasteItem.swift > i got toggled!", oldValue, " -> ", isPinned)
-        }
-    }
+    var isPinned: Bool = false
     
     init(_ value: String) {
         self.value = value
     }
     
-    init(_ value: String, pinned isPinned: Bool) {
-        self.value = value
-        self.isPinned = isPinned
-    }
+    init(_ value: String, pinned : Bool) {
+         self.value = value
+         self.isPinned = pinned
+     }
     
-    mutating func toggleIsPinned() -> Void {
-        self.isPinned.toggle()
+    mutating func toggle() {
+        isPinned.toggle()
     }
 }

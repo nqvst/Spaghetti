@@ -21,12 +21,7 @@ class ClipDataCell: NSTableCellView {
         label?.isEditable = false
         label?.usesSingleLineMode = true
         label?.lineBreakMode = .byTruncatingTail
-        
-        if isPinned {
-            label?.stringValue = "📌 " + title.trimmingCharacters(in: [" "])
-        } else {
-            label?.stringValue = title.trimmingCharacters(in: [" "])
-        }
+        label?.stringValue = title.trimmingCharacters(in: [" "])
         
         self.addSubview(label!)
         

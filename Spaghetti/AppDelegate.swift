@@ -13,10 +13,7 @@ import HotKey
 class AppDelegate: NSObject, NSApplicationDelegate {
     let hotKey = HotKey(key: .p, modifiers: [.command, .control])
     var accessibilityService: AccessibilityService = AccessibilityService()
-    var dataModel = PasteBoardModel(
-        [],
-        []
-    )
+    var dataModel = PasteBoardModel([])
     
     let maxNumerOfItems = 20
     var viewController: ViewController?
@@ -44,7 +41,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 
         WatchPasteboard { copied in
             print("copy detected : \(copied)")
-            self.dataModel.addToPastboard(PasteItem(copied))
+            self.dataModel.add(PasteItem(copied))
             
         }
             
@@ -53,15 +50,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.showPopover()
         }
         
-        accessibilityService.isAccessibilityEnabled(isPrompt: true)
+        //accessibilityService.isAccessibilityEnabled(isPrompt: true)
     }
     
     
     
     func saveToDisk() {
-        let documentsUrl = FileManager.default.urls(for: .userDirectory, in: .userDomainMask)[0] as NSURL
+        //let documentsUrl = FileManager.default.urls(for: .userDirectory, in: .userDomainMask)[0] as NSURL
         // add a filename
-        let fileUrl = documentsUrl.appendingPathComponent(".foo.txt")
+        //let fileUrl = documentsUrl.appendingPathComponent(".foo.txt")
         //
 //        try! history
 //                .map({$0.value})
@@ -83,6 +80,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         viewController?.dataModel = self.dataModel
+        
+        //reset the view before opening the popup again
+        viewController?.showPinnedItems = false
 
         
         viewController?.dismissCallback = {
