@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "Sauce",
+        "repositoryURL": "https://github.com/Clipy/Sauce.git",
+        "state": {
+          "branch": null,
+          "revision": "60508229cecbb915866151ebe9a0bf060a454c84",
+          "version": "2.1.0"
+        }
+      },
+      {
         "package": "SnapKit",
         "repositoryURL": "https://github.com/SnapKit/SnapKit.git",
         "state": {

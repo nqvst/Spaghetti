@@ -11,20 +11,15 @@ import HotKey
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
-    
-    var popover: NSPopover = NSPopover()
     let hotKey = HotKey(key: .p, modifiers: [.command, .control])
-    var history: [String] = [
-        "gurka",
-        "paprika",
-        "1234",
-        "Comhem",
-        "Tele2",
-        "xcode",
-        "Swift",
-    ]
+    var accessibilityService: AccessibilityService = AccessibilityService()
+    var dataModel = PasteBoardModel(
+        [],
+        []
+    )
     
-    var vc : ViewController?
+    let maxNumerOfItems = 20
+    var viewController: ViewController?
     
     var window: NSWindow!
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -49,26 +44,29 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 
         WatchPasteboard { copied in
             print("copy detected : \(copied)")
-            self.history.removeAll { item in
-                copied == item
-            }
-            self.history.append(copied)
+            self.dataModel.addToPastboard(PasteItem(copied))
+            
         }
             
         hotKey.keyDownHandler = {
             print("hotkey pressed")
             self.showPopover()
         }
+        
+        accessibilityService.isAccessibilityEnabled(isPrompt: true)
     }
+    
+    
     
     func saveToDisk() {
         let documentsUrl = FileManager.default.urls(for: .userDirectory, in: .userDomainMask)[0] as NSURL
         // add a filename
         let fileUrl = documentsUrl.appendingPathComponent(".foo.txt")
         //
-        try! history
-                .joined(separator: "\n")
-                .write(to: fileUrl!, atomically: true, encoding: String.Encoding.utf8)
+//        try! history
+//                .map({$0.value})
+//                .joined(separator: "\n")
+//                .write(to: fileUrl!, atomically: true, encoding: String.Encoding.utf8)
     }
     
     @objc func showPopover() {
@@ -80,22 +78,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let frame = CGRect(origin: .zero, size: CGSize(width: 400, height: 300))
         let popover = NSPopover()
 
-        vc = ViewController()
-        vc?.history = history
-        vc?.removeItem = { (str: String) in
-            print("removing from closure")
-            self.history.removeAll { $0 == str }
+        if viewController == nil {
+            viewController = ViewController()
         }
-        vc?.dismissCallback = {
+        
+        viewController?.dataModel = self.dataModel
+
+        
+        viewController?.dismissCallback = {
             print("closing from closure!")
             popover.close()
         }
-        vc!.view.frame = frame
         
-        popover.contentViewController = vc
+        viewController!.view.frame = frame
+        
+        popover.contentViewController = viewController
         popover.behavior = .transient
+        popover.contentSize = CGSize(width: 400, height: 300)
         popover.show(relativeTo: button.bounds, of: button, preferredEdge: .maxY)
-    
+        
     }
 
 }
