@@ -10,22 +10,21 @@ import Cocoa
 
 class ClipDataCell: NSTableCellView {
     
-    var label: NSTextField?
+    var label: NSTextField = NSTextField()
     
     init(frame frameRect: NSRect, text title: String, pinned isPinned: Bool) {
         super.init(frame: frameRect)
-        label = NSTextField()
         
-        label?.drawsBackground = false
-        label?.isBordered = false
-        label?.isEditable = false
-        label?.usesSingleLineMode = true
-        label?.lineBreakMode = .byTruncatingTail
-        label?.stringValue = title.trimmingCharacters(in: [" "])
+        label.drawsBackground = false
+        label.isBordered = false
+        label.isEditable = false
+        label.usesSingleLineMode = true
+        label.lineBreakMode = .byTruncatingTail
+        label.stringValue = title.trimmingCharacters(in: [" "])
         
-        self.addSubview(label!)
+        self.addSubview(label)
         
-        label?.snp.makeConstraints {make in
+        label.snp.makeConstraints {make in
             make.edges.equalTo(self).inset(NSEdgeInsetsMake(10, 10, 10, 10))
         }
     }

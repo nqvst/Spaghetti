@@ -16,6 +16,8 @@
 		0418B6AC24A498B500119A11 /* StringSubscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0418B6AB24A498B500119A11 /* StringSubscript.swift */; };
 		0488E6EF24F7A3C0001D5FAE /* ClipDataCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0488E6EE24F7A3C0001D5FAE /* ClipDataCell.swift */; };
 		0488E6F124F8006E001D5FAE /* AccessibilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0488E6F024F8006E001D5FAE /* AccessibilityService.swift */; };
+		0488E6F324FA5E6B001D5FAE /* PasteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0488E6F224FA5E6B001D5FAE /* PasteService.swift */; };
+		0488E6F524FA641D001D5FAE /* SystemImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0488E6F424FA641D001D5FAE /* SystemImages.swift */; };
 		04EF627024F00CE7007240E6 /* MenuChoices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04EF626F24F00CE7007240E6 /* MenuChoices.swift */; };
 		04EF627324F27AF0007240E6 /* Sauce in Frameworks */ = {isa = PBXBuildFile; productRef = 04EF627224F27AF0007240E6 /* Sauce */; };
 		04EF627724F3CAE2007240E6 /* PasteItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04EF627624F3CAE2007240E6 /* PasteItem.swift */; };
@@ -33,6 +35,8 @@
 		0418B6AB24A498B500119A11 /* StringSubscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringSubscript.swift; sourceTree = "<group>"; };
 		0488E6EE24F7A3C0001D5FAE /* ClipDataCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipDataCell.swift; sourceTree = "<group>"; };
 		0488E6F024F8006E001D5FAE /* AccessibilityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityService.swift; sourceTree = "<group>"; };
+		0488E6F224FA5E6B001D5FAE /* PasteService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteService.swift; sourceTree = "<group>"; };
+		0488E6F424FA641D001D5FAE /* SystemImages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemImages.swift; sourceTree = "<group>"; };
 		04EF626F24F00CE7007240E6 /* MenuChoices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuChoices.swift; sourceTree = "<group>"; };
 		04EF627624F3CAE2007240E6 /* PasteItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteItem.swift; sourceTree = "<group>"; };
 		04EF627824F4381B007240E6 /* PasteBoardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteBoardModel.swift; sourceTree = "<group>"; };
@@ -83,6 +87,8 @@
 				04EF627824F4381B007240E6 /* PasteBoardModel.swift */,
 				0488E6EE24F7A3C0001D5FAE /* ClipDataCell.swift */,
 				0488E6F024F8006E001D5FAE /* AccessibilityService.swift */,
+				0488E6F224FA5E6B001D5FAE /* PasteService.swift */,
+				0488E6F424FA641D001D5FAE /* SystemImages.swift */,
 			);
 			path = Spaghetti;
 			sourceTree = "<group>";
@@ -171,7 +177,9 @@
 				0488E6EF24F7A3C0001D5FAE /* ClipDataCell.swift in Sources */,
 				0418B6AC24A498B500119A11 /* StringSubscript.swift in Sources */,
 				04EF627924F4381B007240E6 /* PasteBoardModel.swift in Sources */,
+				0488E6F324FA5E6B001D5FAE /* PasteService.swift in Sources */,
 				04EF627724F3CAE2007240E6 /* PasteItem.swift in Sources */,
+				0488E6F524FA641D001D5FAE /* SystemImages.swift in Sources */,
 				0418B69924A405EA00119A11 /* AppDelegate.swift in Sources */,
 				0488E6F124F8006E001D5FAE /* AccessibilityService.swift in Sources */,
 				04EF627024F00CE7007240E6 /* MenuChoices.swift in Sources */,
@@ -309,7 +317,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = StoryboardApp/StoryboardApp.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Spaghetti/Spaghetti.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -320,7 +328,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.enqvist.StoryboardApp;
+				PRODUCT_BUNDLE_IDENTIFIER = io.enqvist.Spaghetti;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 			};
@@ -330,7 +338,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = StoryboardApp/StoryboardApp.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Spaghetti/Spaghetti.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -341,7 +349,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.enqvist.StoryboardApp;
+				PRODUCT_BUNDLE_IDENTIFIER = io.enqvist.Spaghetti;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 			};

@@ -10,12 +10,21 @@ import Foundation
 import Cocoa
 
 class PasteBoardModel {
+    let STORAGE_KEY: String = "SPAGHETTI_DATA_STORAGE_KEY"
     var pasteItems: [PasteItem]!
     var pinnedItems: [PasteItem] {
         pasteItems.filter { $0.isPinned }
     }
     var onlyHistorItems: [PasteItem] {
         pasteItems.filter { !$0.isPinned }
+    }
+    
+    var fileURL: URL {
+        guard let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            fatalError("there is no way!")
+        }
+        let fileUrl = path.appendingPathComponent("data.json")
+        return fileUrl
     }
     
     var maxNumerOfItems: Int = 100
@@ -56,12 +65,54 @@ class PasteBoardModel {
     
     func removePinned(_ itemToRemove: PasteItem) {
         if let index = pasteItems.firstIndex(where:{ $0.value == itemToRemove.value }) {
-           pasteItems[index].toggle()
-       }
+            pasteItems[index].toggle()
+        }
     }
     
     func clear() {
         pasteItems.removeAll()
+        saveItems()
+    }
+    
+    func encode() -> String? {
+        do {
+            let jsonData = try JSONEncoder().encode(pasteItems)
+            let jsonString = String(data: jsonData, encoding: .utf8)!
+            print(jsonString)
+            return jsonString
+        } catch {
+            print(error)
+        }
+        return nil
+    }
+    
+    func decode(json: String) -> [PasteItem] {
+        do {
+            let decodedItems = try JSONDecoder().decode([PasteItem].self, from: json.data(using: .utf8)!)
+            print(decodedItems)
+            return decodedItems
+        } catch { print(error) }
+        return []
+    }
+    
+    func saveItems () {
+        if let json = encode() {
+            do {
+                try json.write(to: fileURL, atomically: true, encoding: .utf8)
+            }
+            catch { print(error) }
+        }
+    }
+    
+    func loadItems() {
+        do {
+            let loadedText = try String(contentsOf: fileURL, encoding: .utf8)
+            print(loadedText)
+            pasteItems = decode(json: loadedText)
+        }
+        catch {
+            print(error)
+        }
     }
     
 }

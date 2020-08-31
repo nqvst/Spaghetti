@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct PasteItem {
+struct PasteItem: Encodable, Decodable {
     var value: String
     var isPinned: Bool = false
     
@@ -17,9 +17,9 @@ struct PasteItem {
     }
     
     init(_ value: String, pinned : Bool) {
-         self.value = value
-         self.isPinned = pinned
-     }
+        self.value = value
+        self.isPinned = pinned
+    }
     
     mutating func toggle() {
         isPinned.toggle()

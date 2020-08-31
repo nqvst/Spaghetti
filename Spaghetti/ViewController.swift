@@ -10,7 +10,10 @@ import Cocoa
 import SnapKit
 import Sauce
 
+
 class ViewController: NSViewController {
+    
+    let pasteService: PasteService = PasteService()
     
     var label: NSTextField!
     let scrollView = NSScrollView()
@@ -73,13 +76,8 @@ class ViewController: NSViewController {
         }
     }
     
-    func setupScrollView() {
-        
-        
-    }
-    
     func setupLabel() {
-        label = NSTextField(string: showPinnedItems ? "Pinned" : "History")
+        label = NSTextField(string: showPinnedItems ? "Saved" : "History")
         label.refusesFirstResponder = true
         label.isEditable = false
         label.drawsBackground = false
@@ -97,6 +95,8 @@ class ViewController: NSViewController {
         
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.target = self
+        tableView.doubleAction = #selector(handleDoubleClick)
         
         let dataCol = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "DataColumn"))
         tableView.addTableColumn(dataCol)
@@ -112,6 +112,12 @@ class ViewController: NSViewController {
         //        view.addSubview(tableView)
     }
     
+    @objc func handleDoubleClick() {
+        if tableView.selectedRow >= 0 {
+            actuallyPaste()
+        }
+    }
+    
     func setupMenu() {
         settingsBuitton = NSPopUpButton(frame: .zero, pullsDown: true)
         settingsBuitton.addItem(withTitle: MenuChoices.EXIT.rawValue)
@@ -123,7 +129,8 @@ class ViewController: NSViewController {
         settingsBuitton.menu?.insertItem(settingsItem, at: 0)
         settingsBuitton.action = #selector(onMenuClick)
         
-        settingsItem.image = NSImage(named: "NSActionTemplate")
+        
+        settingsItem.image = NSImage(named: NSImage.Name.ACTION)
         let cell = settingsBuitton.cell as? NSButtonCell
         cell?.imagePosition = .imageOnly
         cell?.bezelStyle = .texturedRounded
@@ -171,10 +178,10 @@ class ViewController: NSViewController {
     func updateUI() {
         print("updateUI - ", self.showPinnedItems)
         if label != nil {
-            self.label.stringValue = self.showPinnedItems ? "Pinned" : "History"
+            self.label.stringValue = self.showPinnedItems ? "Saved" : "History"
             self.tableView.reloadData()
-            removeConstraints()
-            calculateConstraints()
+//            removeConstraints()
+//            calculateConstraints()
         }
     }
     
@@ -188,13 +195,30 @@ class ViewController: NSViewController {
         if let command = settingsBuitton.selectedItem?.title {
             switch command {
             case MenuChoices.EXIT.rawValue:
-                print("exit")
+                print("Exit")
                 NSApplication.shared.terminate(self)
             case MenuChoices.CLEAR.rawValue:
                 print("Clear")
                 dataModel.clear()
                 tableView.reloadData()
             case MenuChoices.HELP.rawValue:
+                let alert = NSAlert()
+                alert.messageText = "USAGE"
+                alert.informativeText = """
+                ° Use CMD + CTRL + P to open
+                
+                ° Use the ↑ and ↓ keys to navigate
+                
+                ° Use the enter ⮐ key to paste a selected item.
+                
+                ° Use swipe(scroll) from the left to save an item,
+                    and right to remove an item.
+                
+                ° Use the ← and → to navigate between saved items and History
+                """
+                alert.addButton(withTitle: "OK")
+                alert.alertStyle = .informational
+                alert.runModal()
                 print("help")
             default:
                 print("Default: no actionmatching command: ", command)
@@ -203,13 +227,14 @@ class ViewController: NSViewController {
     }
     
     @objc func actuallyPaste() {
-        
         let currentSelectionIndex = max(self.tableView.selectedRow, 0)
         let currentSelection = self.reversedHistory[currentSelectionIndex % reversedHistory.count]
         
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(currentSelection.value, forType: .string)
-        pasteresults()
+        
+        pasteService.paste()
+        
         tableView.moveRow(at: self.tableView.selectedRow, to: 0)
         
         if let dissmiss = self.dismissCallback {
@@ -217,28 +242,8 @@ class ViewController: NSViewController {
             dissmiss()
         }
     }
-    
-    func pasteresults () {
-        let vKeyCode = Sauce.shared.keyCode(by: .v)
-        print("vKeyCode", vKeyCode)
-        DispatchQueue.main.async {
-            let source = CGEventSource(stateID: .combinedSessionState)
-            // Disable local keyboard events while pasting
-            source?.setLocalEventsFilterDuringSuppressionState([.permitLocalMouseEvents, .permitSystemDefinedEvents], state: .eventSuppressionStateSuppressionInterval)
-            // Press Command + V
-            let keyVDown = CGEvent(keyboardEventSource: source, virtualKey: vKeyCode, keyDown: true)
-            keyVDown?.flags = .maskCommand
-            // Release Command + V
-            let keyVUp = CGEvent(keyboardEventSource: source, virtualKey: vKeyCode, keyDown: false)
-            keyVUp?.flags = .maskCommand
-            // Post Paste Command
-            keyVDown?.post(tap: .cgAnnotatedSessionEventTap)
-            keyVUp?.post(tap: .cgAnnotatedSessionEventTap)
-        }
-    }
 }
 
-// MARK: view
 extension ViewController: NSTableViewDataSource, NSTableViewDelegate {
     
     func numberOfRows(in tableView: NSTableView) -> Int {
@@ -246,7 +251,6 @@ extension ViewController: NSTableViewDataSource, NSTableViewDelegate {
         return reversedHistory.count
     }
     
-    // MARK: NSTableViewDelegate - view
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         let item = reversedHistory[row]
         let height: CGFloat = 35.0
@@ -276,7 +280,6 @@ extension ViewController: NSTableViewDataSource, NSTableViewDelegate {
         let removePinAction = NSTableViewRowAction(style: .destructive, title: "Remove") { (action, row) in
             self.dataModel.removePinned(item)
             tableView.removeRows(at: IndexSet(integer: row), withAnimation: .slideRight)
-            
         }
         
         switch edge {

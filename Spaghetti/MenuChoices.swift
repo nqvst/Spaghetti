@@ -13,11 +13,3 @@ enum MenuChoices: String {
     case CLEAR = "Clear"
     case HELP = "Help"
 }
-
-
-//enum MoveDirection : String {
-//    case forward = "you moved forward"
-//    case back = "you moved backwards"
-//    case left = "you moved to the left"
-//    case right = "you moved to the right"
-//}

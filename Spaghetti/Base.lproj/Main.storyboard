@@ -696,7 +696,7 @@
                                     <font key="font" metaFont="system"/>
                                     <menu key="menu" id="q6w-X6-m52">
                                         <items>
-                                            <menuItem title="Item 1" state="on" image="NSActionTemplate" hidden="YES" id="n5K-tF-K3j"/>
+                                            <menuItem title="Item 1" state="on" image="NSTouchBarTextItalicTemplate" hidden="YES" id="n5K-tF-K3j"/>
                                             <menuItem title="Item 2" id="Cnh-fh-bCs"/>
                                             <menuItem title="Item 3" id="6Vu-d5-Mdj"/>
                                         </items>
@@ -712,6 +712,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="NSActionTemplate" width="14" height="14"/>
+        <image name="NSTouchBarTextItalicTemplate" width="8" height="30"/>
     </resources>
 </document>
