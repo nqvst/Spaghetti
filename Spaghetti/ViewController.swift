@@ -14,7 +14,7 @@ import Sauce
 class ViewController: NSViewController {
     
     let pasteService: PasteService = PasteService()
-    
+    let segmentedControl: NSSegmentedControl = NSSegmentedControl()
     var label: NSTextField!
     let scrollView = NSScrollView()
     let tableView = NSTableView()
@@ -48,32 +48,51 @@ class ViewController: NSViewController {
             return $0
         }
         
+        setupSegmentedControl()
         setupTableView()
         setupMenu()
-        setupLabel()
         
         calculateConstraints()
-        // dont highlight the settings button
-        settingsBuitton.refusesFirstResponder = true
     }
     
     func calculateConstraints() {
-        label.snp.makeConstraints { make -> Void in
-            make.centerX.top.equalTo(view).inset(NSEdgeInsetsMake(10, 10, 10, 10))
-            
-        }
         settingsBuitton.snp.makeConstraints { make -> Void in
             make.trailing.top.equalTo(view).inset(NSEdgeInsetsMake(10, 10, 10, 10))
-        }
-        
-        tableView.snp.makeConstraints { make -> Void in
-            make.trailing.leading.top.equalTo(scrollView).inset(NSEdgeInsetsMake(5, 5, 5, 5))
         }
         
         scrollView.snp.makeConstraints { make -> Void in
             make.top.equalTo(settingsBuitton.snp.bottom).offset(10)
             make.bottom.leading.trailing.equalTo(view)
         }
+        
+        tableView.snp.makeConstraints { make -> Void in
+            make.trailing.leading.top.equalTo(scrollView).inset(NSEdgeInsetsMake(5, 5, 5, 5))
+        }
+        
+        segmentedControl.snp.makeConstraints { make -> Void in
+            make.centerX.top.equalTo(view).inset(NSEdgeInsetsMake(10, 10, 10, 10))
+        }
+    }
+    
+    func setupSegmentedControl() {
+        segmentedControl.segmentCount = 2
+        segmentedControl.setLabel("History", forSegment: 0)
+        segmentedControl.setLabel("Saved", forSegment: 1)
+        segmentedControl.segmentStyle = .automatic
+        segmentedControl.target = self
+        segmentedControl.sizeToFit()
+        segmentedControl.selectedSegment = 0
+        segmentedControl.refusesFirstResponder = true
+        segmentedControl.action = #selector(didSwitchTabs)
+        
+        view.addSubview(segmentedControl)
+    }
+    
+    @objc func didSwitchTabs () {
+        print("didSwitch", segmentedControl.selectedSegment)
+        let selectedIndex = segmentedControl.selectedSegment
+        showPinnedItems = selectedIndex == 1
+        updateUI()
     }
     
     func setupLabel() {
@@ -108,8 +127,6 @@ class ViewController: NSViewController {
         
         tableView.headerView = nil
         scrollView.documentView = tableView
-        
-        //        view.addSubview(tableView)
     }
     
     @objc func handleDoubleClick() {
@@ -120,7 +137,7 @@ class ViewController: NSViewController {
     
     func setupMenu() {
         settingsBuitton = NSPopUpButton(frame: .zero, pullsDown: true)
-        settingsBuitton.addItem(withTitle: MenuChoices.EXIT.rawValue)
+        settingsBuitton.addItem(withTitle: MenuChoices.QUIT.rawValue)
         settingsBuitton.addItem(withTitle: MenuChoices.CLEAR.rawValue)
         settingsBuitton.addItem(withTitle: MenuChoices.HELP.rawValue)
         
@@ -129,6 +146,7 @@ class ViewController: NSViewController {
         settingsBuitton.menu?.insertItem(settingsItem, at: 0)
         settingsBuitton.action = #selector(onMenuClick)
         
+        settingsBuitton.refusesFirstResponder = true
         
         settingsItem.image = NSImage(named: NSImage.Name.ACTION)
         let cell = settingsBuitton.cell as? NSButtonCell
@@ -177,24 +195,14 @@ class ViewController: NSViewController {
     
     func updateUI() {
         print("updateUI - ", self.showPinnedItems)
-        if label != nil {
-            self.label.stringValue = self.showPinnedItems ? "Saved" : "History"
-            self.tableView.reloadData()
-//            removeConstraints()
-//            calculateConstraints()
-        }
-    }
-    
-    func removeConstraints() {
-        label.snp.removeConstraints()
-        settingsBuitton.snp.removeConstraints()
-        tableView.snp.removeConstraints()
+        self.tableView.reloadData()
+        self.segmentedControl.selectedSegment = self.showPinnedItems ? 1 : 0
     }
     
     @objc func onMenuClick() {
         if let command = settingsBuitton.selectedItem?.title {
             switch command {
-            case MenuChoices.EXIT.rawValue:
+            case MenuChoices.QUIT.rawValue:
                 print("Exit")
                 NSApplication.shared.terminate(self)
             case MenuChoices.CLEAR.rawValue:
@@ -235,7 +243,9 @@ class ViewController: NSViewController {
         
         pasteService.paste()
         
-        tableView.moveRow(at: self.tableView.selectedRow, to: 0)
+        if !showPinnedItems {
+            tableView.moveRow(at: self.tableView.selectedRow, to: 0)
+        }
         
         if let dissmiss = self.dismissCallback {
             showPinnedItems = false
@@ -274,7 +284,6 @@ extension ViewController: NSTableViewDataSource, NSTableViewDelegate {
         let pinAction = NSTableViewRowAction(style: .regular, title: "Save") { (action, row) in
             self.dataModel.addToPinned(item)
             tableView.removeRows(at: IndexSet(integer: row), withAnimation: .slideRight)
-            
         }
         
         let removePinAction = NSTableViewRowAction(style: .destructive, title: "Remove") { (action, row) in

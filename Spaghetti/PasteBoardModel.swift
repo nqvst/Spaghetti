@@ -34,6 +34,10 @@ class PasteBoardModel {
     }
     
     func add(_ item: PasteItem) {
+        if isItemPinned(item) {
+            return
+        }
+        
         remove(item)
         pasteItems.append(item)
         
@@ -42,6 +46,10 @@ class PasteBoardModel {
                 pasteItems.remove(at: index)
             }
         }
+    }
+    
+    func isItemPinned(_ item: PasteItem) -> Bool {
+        pinnedItems.contains { $0.value == item.value }
     }
     
     func remove(_ itemToRemove: PasteItem) {
@@ -62,7 +70,6 @@ class PasteBoardModel {
         }
     }
     
-    
     func removePinned(_ itemToRemove: PasteItem) {
         if let index = pasteItems.firstIndex(where:{ $0.value == itemToRemove.value }) {
             pasteItems[index].toggle()
@@ -78,7 +85,6 @@ class PasteBoardModel {
         do {
             let jsonData = try JSONEncoder().encode(pasteItems)
             let jsonString = String(data: jsonData, encoding: .utf8)!
-            print(jsonString)
             return jsonString
         } catch {
             print(error)
@@ -89,7 +95,6 @@ class PasteBoardModel {
     func decode(json: String) -> [PasteItem] {
         do {
             let decodedItems = try JSONDecoder().decode([PasteItem].self, from: json.data(using: .utf8)!)
-            print(decodedItems)
             return decodedItems
         } catch { print(error) }
         return []
@@ -107,7 +112,6 @@ class PasteBoardModel {
     func loadItems() {
         do {
             let loadedText = try String(contentsOf: fileURL, encoding: .utf8)
-            print(loadedText)
             pasteItems = decode(json: loadedText)
         }
         catch {

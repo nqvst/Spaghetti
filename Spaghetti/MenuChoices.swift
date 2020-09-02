@@ -9,7 +9,7 @@
 import Foundation
 
 enum MenuChoices: String {
-    case EXIT = "Exit"
+    case QUIT = "Quit"
     case CLEAR = "Clear"
     case HELP = "Help"
 }
