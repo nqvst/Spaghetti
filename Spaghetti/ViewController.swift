@@ -12,7 +12,7 @@ import Sauce
 
 
 class ViewController: NSViewController {
-    
+    let popover = NSPopover()
     let pasteService: PasteService = PasteService()
     let segmentedControl: NSSegmentedControl = NSSegmentedControl()
     var label: NSTextField!
@@ -37,6 +37,14 @@ class ViewController: NSViewController {
     
     override var acceptsFirstResponder: Bool { true }
     
+    init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -60,13 +68,13 @@ class ViewController: NSViewController {
             make.trailing.top.equalTo(view).inset(NSEdgeInsetsMake(10, 10, 10, 10))
         }
         
+        tableView.snp.makeConstraints { make -> Void in
+            make.trailing.leading.top.equalTo(scrollView).inset(NSEdgeInsetsMake(5, 5, 5, 5))
+        }
+        
         scrollView.snp.makeConstraints { make -> Void in
             make.top.equalTo(settingsBuitton.snp.bottom).offset(10)
             make.bottom.leading.trailing.equalTo(view)
-        }
-        
-        tableView.snp.makeConstraints { make -> Void in
-            make.trailing.leading.top.equalTo(scrollView).inset(NSEdgeInsetsMake(5, 5, 5, 5))
         }
         
         segmentedControl.snp.makeConstraints { make -> Void in
@@ -108,8 +116,8 @@ class ViewController: NSViewController {
     func setupTableView() {
         
         scrollView.documentView = tableView
-        
         scrollView.drawsBackground = false
+        
         view.addSubview(scrollView)
         
         tableView.delegate = self
@@ -119,7 +127,6 @@ class ViewController: NSViewController {
         
         let dataCol = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(rawValue: "DataColumn"))
         tableView.addTableColumn(dataCol)
-        
         tableView.frame = scrollView.bounds
         
         scrollView.hasHorizontalScroller = false
@@ -131,7 +138,7 @@ class ViewController: NSViewController {
     
     @objc func handleDoubleClick() {
         if tableView.selectedRow >= 0 {
-            actuallyPaste()
+            performPaste()
         }
     }
     
@@ -142,20 +149,18 @@ class ViewController: NSViewController {
         settingsBuitton.addItem(withTitle: MenuChoices.HELP.rawValue)
         
         let settingsItem = NSMenuItem()
+        settingsItem.image = NSImage(named: NSImage.Name.ACTION)
         
         settingsBuitton.menu?.insertItem(settingsItem, at: 0)
         settingsBuitton.action = #selector(onMenuClick)
-        
         settingsBuitton.refusesFirstResponder = true
         
-        settingsItem.image = NSImage(named: NSImage.Name.ACTION)
         let cell = settingsBuitton.cell as? NSButtonCell
         cell?.imagePosition = .imageOnly
         cell?.bezelStyle = .texturedRounded
         
         view.addSubview(settingsBuitton)
     }
-    
     
     override func loadView() {
         self.view = NSView()
@@ -164,7 +169,7 @@ class ViewController: NSViewController {
     func keyDownPressed(with event: NSEvent) -> Bool {
         print("caught a key down: \(event.keyCode)")
         if event.keyCode == 36 { // Enter Key
-            actuallyPaste()
+            performPaste()
             return true
         }
         
@@ -182,15 +187,14 @@ class ViewController: NSViewController {
             return true
         }
         
+        if event.keyCode == 53 { //esc
+            if let dissmiss = self.dismissCallback {
+                showPinnedItems = false
+                dissmiss()
+            }
+        }
+        
         return false
-    }
-    
-    init() {
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
     
     func updateUI() {
@@ -234,7 +238,7 @@ class ViewController: NSViewController {
         }
     }
     
-    @objc func actuallyPaste() {
+    @objc func performPaste() {
         let currentSelectionIndex = max(self.tableView.selectedRow, 0)
         let currentSelection = self.reversedHistory[currentSelectionIndex % reversedHistory.count]
         
@@ -255,7 +259,6 @@ class ViewController: NSViewController {
 }
 
 extension ViewController: NSTableViewDataSource, NSTableViewDelegate {
-    
     func numberOfRows(in tableView: NSTableView) -> Int {
         print("numberOfRows", reversedHistory.count)
         return reversedHistory.count
@@ -302,6 +305,56 @@ extension ViewController: NSTableViewDataSource, NSTableViewDelegate {
             return [removeAction]
         @unknown default:
             fatalError("unknown edge")
+        }
+    }
+    
+    func tableViewSelectionDidChange(_ notification: Notification) {
+        if popover.isShown {
+            popover.close()
+        }
+        
+        guard let table = notification.object as? NSTableView else {
+            return
+        }
+        
+        let row = table.selectedRow
+        
+        if row == -1 {
+            return
+        }
+        
+        let item = reversedHistory[row]
+        let isProbablyOverflowing = item.value.contains("\n") || item.value.contains("\r") || item.value.count > 70
+        
+        if isProbablyOverflowing {
+            let controller = NSViewController()
+            controller.view = NSView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+
+            popover.contentViewController = controller
+            popover.contentSize = controller.view.frame.size
+
+            popover.behavior = .transient
+            popover.animates = false
+
+            let txt = NSTextField(frame: .zero)
+
+            txt.stringValue = item.value
+            txt.isEditable = false
+            txt.drawsBackground = false
+            txt.isBezeled = false
+            txt.backgroundColor = .clear
+
+            controller.view.addSubview(txt)
+            txt.sizeToFit()
+
+            txt.snp.makeConstraints{ make in
+                make.edges.equalToSuperview().inset(NSEdgeInsetsMake(10, 10, 10, 10))
+            }
+
+            let rowRect = table.rect(ofRow: row)
+
+            popover.contentSize = CGSize(width: 400, height: 300)
+            popover.show(relativeTo: rowRect, of: table, preferredEdge: .minX)
         }
     }
 }
