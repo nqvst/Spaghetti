@@ -13,25 +13,12 @@ import HotKey
 class AppDelegate: NSObject, NSApplicationDelegate {
     var window: NSWindow!
 
-    let hotKey = HotKey(key: .p, modifiers: [.command, .control])
+    let openHotKey = HotKey(key: .p, modifiers: [.command, .control])
+    
     var accessibilityService: AccessibilityService = AccessibilityService()
     var dataModel = PasteBoardModel([])
     var viewController: ViewController?
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-    
-    func WatchPasteboard(copied: @escaping (_ copiedString:String) -> Void) {
-        let pasteboard = NSPasteboard.general
-        var changeCount = NSPasteboard.general.changeCount
-        
-        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            if let copiedString = pasteboard.string(forType: .string) {
-                if pasteboard.changeCount != changeCount {
-                    copied(copiedString)
-                    changeCount = pasteboard.changeCount
-                }
-            }
-        }
-    }
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // 𝒞 originale
@@ -44,7 +31,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.dataModel.add(PasteItem(copied))
         }
             
-        hotKey.keyDownHandler = {
+        openHotKey.keyDownHandler = {
             print("hotkey pressed")
             self.showPopover()
         }

@@ -133,7 +133,6 @@ class ViewController: NSViewController {
         scrollView.hasVerticalScroller = false
         
         tableView.headerView = nil
-        scrollView.documentView = tableView
     }
     
     @objc func handleDoubleClick() {
@@ -194,6 +193,17 @@ class ViewController: NSViewController {
             }
         }
         
+//        if event.keyCode == 3 && event.modifierFlags.contains(.command) {
+//            if tableView.selectedRow != -1 {
+//                let item = reversedHistory[tableView.selectedRow]
+//                if let formattedJSON = formatJSON(stringValue: item.value) {
+//                    print(formattedJSON)
+//                    dataModel?.add(PasteItem(formattedJSON))
+//                    updateUI()
+//                }
+//            }
+//        }
+
         return false
     }
     
@@ -338,7 +348,7 @@ extension ViewController: NSTableViewDataSource, NSTableViewDelegate {
 
             let txt = NSTextField(frame: .zero)
 
-            txt.stringValue = item.value
+            txt.stringValue = item.value[0..<2000]
             txt.isEditable = false
             txt.drawsBackground = false
             txt.isBezeled = false
@@ -357,4 +367,16 @@ extension ViewController: NSTableViewDataSource, NSTableViewDelegate {
             popover.show(relativeTo: rowRect, of: table, preferredEdge: .minX)
         }
     }
+    
+    /// unused because of performance issues at the moment
+    func formatJSON (stringValue: String) -> String? {
+         if let data = stringValue.data(using: .utf8) {
+             if let formated = data.prettyPrintedJSONString {
+                 return formated as String
+             }
+         }
+         return nil
+     }
 }
+
+//{"widget": { "debug": "on", "window": { "title": "Sample Konfabulator Widget", "name": "main_window", "width": 500, "height": 500 }, "image": { "src": "Images/Sun.png", "name": "sun1", "hOffset": 250, "vOffset": 250, "alignment": "center" }, "text": { "data": "Click Here", "size": 36, "style": "bold", "name": "text1", "hOffset": 250, "vOffset": 100, "alignment": "center", "onMouseUp": "sun1.opacity = (sun1.opacity / 100) * 90;" } }}

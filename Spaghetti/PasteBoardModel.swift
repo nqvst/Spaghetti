@@ -10,7 +10,6 @@ import Foundation
 import Cocoa
 
 class PasteBoardModel {
-    let STORAGE_KEY: String = "SPAGHETTI_DATA_STORAGE_KEY"
     var pasteItems: [PasteItem]!
     var pinnedItems: [PasteItem] {
         pasteItems.filter { $0.isPinned }
